@@ -10,6 +10,12 @@ import java.util.regex.Pattern;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -30,6 +36,7 @@ import org.json.JSONObject;
  * <li>Signpost for OAuth authentication to Twitter</li>
  * <li>Apache's Commons and HTTPComponents APIs for performing REST calls</li>
  * <li>JSON libraries to parse twitter content</li>
+ * <li>Apache Hadoop Core and HDFS libraries for HDFS File writes</li>
  * <li>Maven is used as the build utility</li></ul>
  * 
  * This program expects as a single command-line parameter the folder path into which
@@ -181,5 +188,31 @@ public class BasicTwitterPull {
     System.out.println ("The following files were generated: ");
     System.out.println ("  " + messageFile.getAbsolutePath());
     System.out.println ("  " + hashTagFile.getAbsolutePath());
+    
+    //Now we begin the HDFS process
+    try {
+      Configuration hdfsConfiguration = new Configuration();
+      FileSystem hdfs                 = FileSystem.get(hdfsConfiguration);
+      
+      Path localFile = new Path(messageFile.getAbsolutePath());
+      Path hdfsFile  = new Path("/proj/messageOutput.txt");
+      
+      //If the HDFS version of the file already exists, purge it first
+      if (hdfs.exists(hdfsFile)) {
+        hdfs.delete(hdfsFile, false);
+      }
+      
+      FSDataInputStream in   = hdfs.open(localFile);
+      FSDataOutputStream out = hdfs.create(hdfsFile, true);
+
+      IOUtils.copyBytes(in, out, hdfsConfiguration);
+      
+      try { in.close();  } catch (Throwable t) { /** Ignore Errors */ }
+      try { out.close(); } catch (Throwable t) { /** Ignore Errors */ }
+      
+    } catch (Throwable t) {
+      System.err.println ("Something bad happened: " + t.getMessage());
+      t.printStackTrace();
+    }
   }
 }
