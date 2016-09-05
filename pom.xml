@@ -112,6 +112,12 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-core</artifactId>
       <version>${ac.hadoop.core.version}</version>
+      <exclusions>
+        <exclusion>  <!-- declare the exclusion here -->
+          <groupId>commons-httpclient</groupId>
+          <artifactId>commons-httpclient</artifactId>
+        </exclusion>
+      </exclusions> 
     </dependency>   
 
     <dependency>
