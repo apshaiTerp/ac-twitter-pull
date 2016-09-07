@@ -30,7 +30,6 @@ import org.json.JSONObject;
  * <li>Signpost for OAuth authentication to Twitter</li>
  * <li>Apache's Commons and HTTPComponents APIs for performing REST calls</li>
  * <li>JSON libraries to parse twitter content</li>
- * <li>Apache Hadoop Core and HDFS libraries for HDFS File writes</li>
  * <li>Maven is used as the build utility</li></ul>
  * 
  * This program expects as a single command-line parameter the folder path into which
