@@ -10,12 +10,6 @@ import java.util.regex.Pattern;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -60,6 +54,17 @@ public class BasicTwitterPull {
   /** Count of how many tweets I want to pull */
   private static final int TWEET_COUNT = 200;
   
+  /** Storage point for file path */
+  private String parentFolder;
+  
+  /**
+   * Basic Constructor.
+   * @param filePath The file path provided at the command prompt.
+   */
+  public BasicTwitterPull(String filePath) {
+    parentFolder = filePath;
+  }
+  
   /**
    * @param args list of command line arguments
    */
@@ -70,7 +75,11 @@ public class BasicTwitterPull {
     }
     
     //create our output files, purging previous ones if possible.
-    String parentFolder = args[0];
+    BasicTwitterPull pull = new BasicTwitterPull(args[0]);
+    pull.execute();
+  }
+    
+  public void execute() {   
     File rootFolder  = new File(parentFolder);
     if (!rootFolder.exists()) {
       System.err.println ("The provided folder path does not exist");
@@ -80,8 +89,9 @@ public class BasicTwitterPull {
       System.err.println ("The provided folder path is not a directory");
       return;
     }
-    File messageFile = new File(rootFolder, "messageOutput.txt");
-    File hashTagFile = new File(rootFolder, "hashTagOutput.txt");
+    File messageFile  = new File(rootFolder, "messageOutput.txt");
+    File hashTagFile  = new File(rootFolder, "hashTagOutput.txt");
+    File fullDumpFile = new File(rootFolder, "jsondump.txt");
     
     if (messageFile.exists()) messageFile.delete();
     if (hashTagFile.exists()) hashTagFile.delete();
@@ -89,90 +99,133 @@ public class BasicTwitterPull {
     CloseableHttpClient   client   = null;
     CloseableHttpResponse response = null;
     
-    PrintWriter messageWriter = null;
-    PrintWriter hashTagWriter = null;
+    PrintWriter messageWriter  = null;
+    PrintWriter hashTagWriter  = null;
+    PrintWriter jsonDumpWriter = null;
     
+    int totalTweets = 0;
+
     try {
       OAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
       consumer.setTokenWithSecret(ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
       
-      HttpGet request = new HttpGet("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&count=" + TWEET_COUNT);
-      consumer.sign(request);
-      
       client = HttpClients.createDefault();
-      response = client.execute(request);
       
-      HttpEntity entity = response.getEntity();
-      JSONArray allTweets = new JSONArray(EntityUtils.toString(entity));
+      long minID      = 0;
       
-      messageWriter = new PrintWriter(new BufferedWriter(new FileWriter(messageFile))); 
-      hashTagWriter = new PrintWriter(new BufferedWriter(new FileWriter(hashTagFile)));
+      messageWriter  = new PrintWriter(new BufferedWriter(new FileWriter(messageFile))); 
+      hashTagWriter  = new PrintWriter(new BufferedWriter(new FileWriter(hashTagFile)));
+      jsonDumpWriter = new PrintWriter(new BufferedWriter(new FileWriter(fullDumpFile)));
       
-      System.out.println ("Processing " + allTweets.length() + " tweets...");
-      
-      //Lets start parsing through tweets
-      for (int i = 0; i < allTweets.length(); i++) {
-        JSONObject tweet = allTweets.getJSONObject(i);
+      //Since we can only run 200 in a batch, and we'll hit a cap if we ask more than 16 times over a 
+      //given time interval, let's try to pull 3200 tweets in batches of 200, the max we can pull
+      //from twitter for a given user.
+      for (int loop = 0; loop <= 15; loop++) {
+        //Iterate over this portion
+        String twitterURL = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&count=" + TWEET_COUNT + 
+            "&exclude_replies=true";
+        if (loop > 0) twitterURL += "&max_id=" + minID;
         
-        //Get the message text
-        String message = tweet.getString("text");
+        HttpGet request = new HttpGet(twitterURL);
+        consumer.sign(request);
+        response = client.execute(request);
         
-        //Get the list of HashTags used in this tweet
-        String hashTagsList = "";
-        JSONObject entities = tweet.getJSONObject("entities");
-        JSONArray hashTags = entities.getJSONArray("hashtags");
+        HttpEntity entity = response.getEntity();
+        JSONArray allTweets = new JSONArray(EntityUtils.toString(entity));
         
-        if (hashTags.length() == 0) {
-          //DEBUG
-          //System.out.println ("HashTags: ----");
-        } else {
-          JSONObject singleHashTag = hashTags.getJSONObject(0);
-          //DEBUG
-          //System.out.print("HashTags: " + singleHashTag.getString("text"));
-          hashTagsList = singleHashTag.getString("text");
-          for (int j = 1; j < hashTags.length(); j++) {
-            singleHashTag = hashTags.getJSONObject(j);
-            //DEBUG
-            //System.out.print(", " + singleHashTag.getString("text"));
-            hashTagsList += " " + singleHashTag.getString("text");
-          }
-          //DEBUG
-          //System.out.println();
-        }
+        System.out.println ("Processing " + allTweets.length() + " tweets...");
         
-        //We need to sanitize the String values, scrub out all non-alphanumeric stuff
-        //We strip out URLs first, since the break all our other parsing techniques
-        String scrubbedMessage = message;
-        String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
-        Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
-        Matcher m = p.matcher(scrubbedMessage);
-        while (m.find()) {
-          scrubbedMessage = scrubbedMessage.replaceAll(m.group()," ").trim();
-        }
+        //Lets start parsing through tweets
+        for (int i = 0; i < allTweets.length(); i++) {
+          JSONObject tweet = allTweets.getJSONObject(i);
+          
+          totalTweets++;
 
-        //Remove the ampersand symbol
-        scrubbedMessage = scrubbedMessage.replaceAll("&amp;", "and");
-        //Remove all special characters besides ' @ # (So we retain user and hashtag hits, as well as punctuation)
-        scrubbedMessage = scrubbedMessage.replaceAll("[^A-Za-z0-9'@# ]", " ");
-        //Since we've been padding with whitespace, cut the spacing down to single space
-        scrubbedMessage = scrubbedMessage.trim().replaceAll(" +", " ");
+          //Get the message text
+          String message = tweet.getString("text");
+          
+          //Track the min tweet ID from this batch to be the cap for the next batch
+          if (minID == 0) minID = tweet.getLong("id");
+          else {
+            if (minID > tweet.getLong("id"))
+              minID = tweet.getLong("id");
+          }
+          
+          //Get the list of HashTags used in this tweet
+          String hashTagsList = "";
+          JSONObject entities = tweet.getJSONObject("entities");
+          JSONArray hashTags = entities.getJSONArray("hashtags");
+          
+          if (hashTags.length() == 0) {
+            //DEBUG
+            //System.out.println ("HashTags: ----");
+          } else {
+            JSONObject singleHashTag = hashTags.getJSONObject(0);
+            //DEBUG
+            //System.out.print("HashTags: " + singleHashTag.getString("text"));
+            hashTagsList = singleHashTag.getString("text");
+            for (int j = 1; j < hashTags.length(); j++) {
+              singleHashTag = hashTags.getJSONObject(j);
+              //DEBUG
+              //System.out.print(", " + singleHashTag.getString("text"));
+              hashTagsList += " " + singleHashTag.getString("text");
+            }
+            //DEBUG
+            //System.out.println();
+          }
+          
+          //We need to sanitize the String values, scrub out all non-alphanumeric stuff
+          //We strip out URLs first, since the break all our other parsing techniques
+          String scrubbedMessage = message;
+          try {
+            String urlPattern = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+            Pattern p = Pattern.compile(urlPattern,Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(scrubbedMessage);
+            while (m.find()) {
+              scrubbedMessage = scrubbedMessage.replaceAll(m.group()," ").trim();
+            }
+          } catch (Throwable t) {
+            //We're going to try a more stripped down version that prevents the uncloses paren problem
+            try {
+              String urlPattern2 = "((https?|ftp|gopher|telnet|file|Unsure|http):((//)|(\\\\))+[\\w\\d:#@%/;$~_?\\+-=\\\\\\.&]*)";
+              Pattern p2 = Pattern.compile(urlPattern2,Pattern.CASE_INSENSITIVE);
+              Matcher m2 = p2.matcher(scrubbedMessage);
+              while (m2.find()) {
+                scrubbedMessage = scrubbedMessage.replaceAll(m2.group()," ").trim();
+              }
+            } catch (Throwable t2) {
+              System.err.println ("There were problems parsing the regex content.");
+              System.err.println ("The offending tweet: " + message);
+            }
+          }
+          
+          //Remove the ampersand symbol
+          scrubbedMessage = scrubbedMessage.replaceAll("&amp;", "and");
+          //Remove all special characters besides ' @ # (So we retain user and hashtag hits, as well as punctuation)
+          scrubbedMessage = scrubbedMessage.replaceAll("[^A-Za-z0-9'@# ]", " ");
+          //Since we've been padding with whitespace, cut the spacing down to single space
+          scrubbedMessage = scrubbedMessage.trim().replaceAll(" +", " ");
+          
+          //DEBUG
+          //System.out.println ("Message:  " + message);
+          //System.out.println ("Scrubbed: " + scrubbedMessage);
+          //System.out.println ("HashTags: " + hashTagsList);
+          
+          messageWriter.println(scrubbedMessage);
+          if (hashTagsList.trim().length() > 0)
+            hashTagWriter.println(hashTagsList);
+          jsonDumpWriter.println(tweet.toString(2));
+        }//end for all tweets in this batch
         
-        //DEBUG
-        //System.out.println ("Message:  " + message);
-        //System.out.println ("Scrubbed: " + scrubbedMessage);
-        //System.out.println ("HashTags: " + hashTagsList);
-        
-        messageWriter.println(scrubbedMessage);
-        if (hashTagsList.trim().length() > 0)
-          hashTagWriter.println(hashTagsList);
-        
-      }
+        response.close();
+      }//end for 15 batches
       
-      response.close();
+      
       client.close();
       
       messageWriter.flush();
       hashTagWriter.flush();
+      jsonDumpWriter.close();
       
     } catch (Throwable t) {
       System.out.println ("I had problems: " + t.getMessage());
@@ -185,34 +238,10 @@ public class BasicTwitterPull {
     }
     
     System.out.println ("Program Execution Complete.");
+    System.out.println ("There were " + totalTweets + " tweets recorded.");
     System.out.println ("The following files were generated: ");
     System.out.println ("  " + messageFile.getAbsolutePath());
     System.out.println ("  " + hashTagFile.getAbsolutePath());
-    
-    //Now we begin the HDFS process
-    try {
-      Configuration hdfsConfiguration = new Configuration();
-      FileSystem hdfs                 = FileSystem.get(hdfsConfiguration);
-      
-      Path localFile = new Path(messageFile.getAbsolutePath());
-      Path hdfsFile  = new Path("/proj/messageOutput.txt");
-      
-      //If the HDFS version of the file already exists, purge it first
-      if (hdfs.exists(hdfsFile)) {
-        hdfs.delete(hdfsFile, false);
-      }
-      
-      FSDataInputStream in   = hdfs.open(localFile);
-      FSDataOutputStream out = hdfs.create(hdfsFile, true);
-
-      IOUtils.copyBytes(in, out, hdfsConfiguration);
-      
-      try { in.close();  } catch (Throwable t) { /** Ignore Errors */ }
-      try { out.close(); } catch (Throwable t) { /** Ignore Errors */ }
-      
-    } catch (Throwable t) {
-      System.err.println ("Something bad happened: " + t.getMessage());
-      t.printStackTrace();
-    }
+    System.out.println ("  " + fullDumpFile.getAbsolutePath());
   }
 }

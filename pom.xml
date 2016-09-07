@@ -36,9 +36,6 @@
     <ac.commons.io.version>2.5</ac.commons.io.version>
     <ac.commons.logging.version>1.2</ac.commons.logging.version>
     
-    <ac.hadoop.core.version>1.2.1</ac.hadoop.core.version>
-    <ac.hadoop.hdfs.version>2.7.3</ac.hadoop.hdfs.version>
-    
     <ac.httpclient.version>4.5.2</ac.httpclient.version>
     <ac.httpcore.version>4.4.5</ac.httpcore.version>
 
@@ -108,24 +105,6 @@
       <version>${ac.json.version}</version>
     </dependency> 
       
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-core</artifactId>
-      <version>${ac.hadoop.core.version}</version>
-      <exclusions>
-        <exclusion>  <!-- declare the exclusion here -->
-          <groupId>commons-httpclient</groupId>
-          <artifactId>commons-httpclient</artifactId>
-        </exclusion>
-      </exclusions> 
-    </dependency>   
-
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-hdfs</artifactId>
-      <version>${ac.hadoop.hdfs.version}</version>
-    </dependency>   
-
     <!-- Test Dependencies -->
     <dependency>
       <groupId>junit</groupId>
