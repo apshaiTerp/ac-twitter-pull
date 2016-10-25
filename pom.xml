@@ -185,7 +185,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.ac.umkc.pbd.BasicTwitterPull</mainClass>
+              <mainClass>com.ac.umkc.twitter.BasicTwitterPull</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
