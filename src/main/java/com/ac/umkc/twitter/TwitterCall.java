@@ -78,6 +78,7 @@ public class TwitterCall {
       try {
         JSONObject errors = new JSONObject(responseString);
         if (errors.has("errors")) {
+          System.out.println (responseString);
           System.out.println ("I hit my request limit and need to sleep for about 15 minutes here...");
           System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
           try { Thread.sleep(910000); } catch (Throwable t) {}
@@ -85,6 +86,7 @@ public class TwitterCall {
           return getTwitterUser(userName, userType, writer);
         }
         if (errors.has("error")) {
+          System.out.println (responseString);
           System.out.println ("I do not have persmission to get this data...");
           return null;
         }
@@ -156,13 +158,15 @@ public class TwitterCall {
       try {
         JSONObject errors = new JSONObject(responseString);
         if (errors.has("errors")) {
-          System.out.println ("I hit my request limit and need to sleep for about 15 minutes here...");
+          System.out.println (responseString);
+          System.out.println ("I hit my user request limit and need to sleep for about 15 minutes here...");
           System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
           try { Thread.sleep(910000); } catch (Throwable t) {}
           System.out.println ("Resuming operation");
           return getTwitterUser(userID, userType, writer);
         }
         if (errors.has("error")) {
+          System.out.println (responseString);
           System.out.println ("I do not have persmission to get this data...");
           return null;
         }
@@ -243,12 +247,14 @@ public class TwitterCall {
         JSONObject allFollowers = new JSONObject(responseString);
         
         if (allFollowers.has("errors")) {
-          System.out.println ("I hit my request limit and need to sleep for about 15 minutes here...");
+          System.out.println (responseString);
+          System.out.println ("I hit my follower request limit and need to sleep for about 15 minutes here...");
           loop--;
           System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
           try { Thread.sleep(910000); } catch (Throwable t) {}
           System.out.println ("Resuming operation");
         } else if (allFollowers.has("error")) {
+          System.out.println (responseString);
           System.out.println ("I do not have persmission to get this data...");
           return allUsers;
         } else {
@@ -329,13 +335,15 @@ public class TwitterCall {
         try {
           JSONObject errors = new JSONObject(responseString);
           if (errors.has("errors")) {
-            System.out.println ("I hit my request limit and need to sleep for about 15 minutes here...");
+            System.out.println (responseString);
+            System.out.println ("I hit my tweet request limit and need to sleep for about 15 minutes here...");
             System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
             try { Thread.sleep(910000); } catch (Throwable t) {}
             System.out.println ("Resuming operation");
             continue;
           }
           if (errors.has("error")) {
+            System.out.println (responseString);
             System.out.println ("I do not have persmission to get this data...");
             return statuses;
           }
