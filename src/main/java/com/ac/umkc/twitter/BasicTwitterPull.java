@@ -400,6 +400,8 @@ public class BasicTwitterPull {
         System.out.println ("  There are " + userIDs.size() + " users in this category...");
         
         for (Long curID : userIDs) {
+          System.out.println ("[" + formatter.format(new Date()) + "] Processing Community User " + curID);
+          
           TwitterUser user = TwitterCall.getTwitterUser(curID, UserType.COMMUNITY, userRawWriter);
           userWriter.println (user.jsonify());
           
