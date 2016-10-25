@@ -391,8 +391,8 @@ public class BasicTwitterPull {
       //now we want to record all users, and process tweets
       for (Integer value : sortValues) {
         System.out.println ("[" + formatter.format(new Date()) + "] Processing users who follow " + value + " other key users.");
-        if (value < 5) {
-          System.out.println ("We are ignoring users who follow less than 5 key entities");
+        if (value < 10) {
+          System.out.println ("We are ignoring users who follow less than 10 key entities");
           continue;
         }
         
@@ -403,7 +403,7 @@ public class BasicTwitterPull {
           TwitterUser user = TwitterCall.getTwitterUser(curID, UserType.COMMUNITY, userRawWriter);
           userWriter.println (user.jsonify());
           
-          if (value >= 10) {
+          if (value >= 20) {
             List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
             totalTweets += statuses.size();
             System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
