@@ -113,8 +113,8 @@ public class TwitterCall {
         
         twitterUser.setUserType(userType);
         twitterUser.setTwitterID(jsonUser.getLong("id"));
-        twitterUser.setUserName(jsonUser.getString("name"));
-        twitterUser.setScreenName(jsonUser.getString("screen_name"));
+        twitterUser.setUserName(jsonUser.getString("name").trim());
+        twitterUser.setScreenName(jsonUser.getString("screen_name").trim());
         twitterUser.setFollowersCount(jsonUser.getInt("followers_count"));
         twitterUser.setFriendsCount(jsonUser.getInt("friends_count"));
         twitterUser.setStatusesCount(jsonUser.getInt("statuses_count"));
@@ -202,8 +202,8 @@ public class TwitterCall {
         
         twitterUser.setUserType(userType);
         twitterUser.setTwitterID(jsonUser.getLong("id"));
-        twitterUser.setUserName(jsonUser.getString("name"));
-        twitterUser.setScreenName(jsonUser.getString("screen_name"));
+        twitterUser.setUserName(jsonUser.getString("name").trim());
+        twitterUser.setScreenName(jsonUser.getString("screen_name").trim());
         twitterUser.setFollowersCount(jsonUser.getInt("followers_count"));
         twitterUser.setFriendsCount(jsonUser.getInt("friends_count"));
         twitterUser.setStatusesCount(jsonUser.getInt("statuses_count"));
