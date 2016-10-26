@@ -165,6 +165,11 @@ public class TwitterCall {
       HttpEntity entity = response.getEntity();
       responseString    = EntityUtils.toString(entity);
       
+      if (responseString.trim().length() == 0) {
+        System.out.println ("There was no data in the responseString...  Guess we need to skip this user");
+        return null;
+      }
+      
       try {
         JSONObject errors = new JSONObject(responseString);
         if (errors.has("errors")) {

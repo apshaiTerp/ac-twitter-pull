@@ -406,7 +406,8 @@ public class BasicTwitterPull {
           System.out.println ("[" + formatter.format(new Date()) + "] Processing Community User " + curID);
           
           TwitterUser user = TwitterCall.getTwitterUser(curID, UserType.COMMUNITY, userRawWriter);
-          userWriter.println (user.jsonify());
+          if (user != null) userWriter.println (user.jsonify());
+          else continue;
           
           if (value >= 20) {
             List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
