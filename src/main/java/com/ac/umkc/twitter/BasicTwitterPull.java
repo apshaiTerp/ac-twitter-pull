@@ -3,9 +3,11 @@ package com.ac.umkc.twitter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -197,10 +199,11 @@ public class BasicTwitterPull {
     //List<Long> knownUserIDs        = new LinkedList<Long>();
     
     try {
-      userWriter        = new PrintWriter(new BufferedWriter(new FileWriter(userFile))); 
-      userRawWriter     = new PrintWriter(new BufferedWriter(new FileWriter(userRawFile))); 
-      statusesWriter    = new PrintWriter(new BufferedWriter(new FileWriter(statusesFile)));
-      statusesRawWriter = new PrintWriter(new BufferedWriter(new FileWriter(statusesRawFile)));
+      //userWriter        = new PrintWriter(new BufferedWriter(new FileWriter(userFile))); 
+      userWriter        = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(userFile), StandardCharsets.UTF_8))); 
+      userRawWriter     = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(userRawFile), StandardCharsets.UTF_8))); 
+      statusesWriter    = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(statusesFile), StandardCharsets.UTF_8))); 
+      statusesRawWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(statusesRawFile), StandardCharsets.UTF_8))); 
       
       //Process the list of designers
       for (String designer : designers) {

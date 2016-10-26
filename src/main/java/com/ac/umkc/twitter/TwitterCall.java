@@ -119,7 +119,7 @@ public class TwitterCall {
         twitterUser.setFriendsCount(jsonUser.getInt("friends_count"));
         twitterUser.setStatusesCount(jsonUser.getInt("statuses_count"));
         if (jsonUser.has("location"))
-          twitterUser.setLocation(jsonUser.getString("location"));
+          twitterUser.setLocation(jsonUser.getString("location").trim());
         
         //System.out.println (twitterUser.jsonify());
       }
@@ -169,11 +169,20 @@ public class TwitterCall {
         JSONObject errors = new JSONObject(responseString);
         if (errors.has("errors")) {
           System.out.println (responseString);
-          System.out.println ("I hit my user request limit and need to sleep for about 15 minutes here...");
-          System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
-          try { Thread.sleep(910000); } catch (Throwable t) {}
-          System.out.println ("Resuming operation");
-          return getTwitterUser(userID, userType, writer);
+          JSONObject errorDetails = errors.getJSONArray("errors").getJSONObject(0);
+          int errorCode = errorDetails.getInt("code");
+          
+          if (errorCode == 17) {
+            System.out.println ("No user matches for specified terms.");
+            return null;
+          }
+          if (errorCode == 88) {
+            System.out.println ("I hit my request limit and need to sleep for about 15 minutes here...");
+            System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
+            try { Thread.sleep(910000); } catch (Throwable t) {}
+            System.out.println ("Resuming operation");
+            return getTwitterUser(userID, userType, writer);
+          }
         }
         if (errors.has("error")) {
           System.out.println (responseString);
@@ -199,7 +208,7 @@ public class TwitterCall {
         twitterUser.setFriendsCount(jsonUser.getInt("friends_count"));
         twitterUser.setStatusesCount(jsonUser.getInt("statuses_count"));
         if (jsonUser.has("location"))
-          twitterUser.setLocation(jsonUser.getString("location"));
+          twitterUser.setLocation(jsonUser.getString("location").trim());
         
         //System.out.println (twitterUser.jsonify());
       }
