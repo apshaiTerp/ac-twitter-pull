@@ -91,9 +91,9 @@ public class TwitterUser implements Serializable {
       this.userName = null;
     else {
       this.userName = userName.trim();
-      this.userName = this.userName.replaceAll("\\", "\\\\");
-      this.userName = this.userName.replaceAll("\"", "\\\"");
-      this.userName = this.userName.replaceAll("/", "\\/");
+      this.userName = this.userName.replace("\\", "\\\\");
+      this.userName = this.userName.replace("\"", "\\\"");
+      this.userName = this.userName.replace("/", "\\/");
     }
   }
 
@@ -112,9 +112,9 @@ public class TwitterUser implements Serializable {
       this.screenName = null;
     else {
       this.screenName = screenName.trim();
-      this.screenName = this.screenName.replaceAll("\\", "\\\\");
-      this.screenName = this.screenName.replaceAll("\"", "\\\"");
-      this.screenName = this.screenName.replaceAll("/", "\\/");
+      this.screenName = this.screenName.replace("\\", "\\\\");
+      this.screenName = this.screenName.replace("\"", "\\\"");
+      this.screenName = this.screenName.replace("/", "\\/");
     }
   }
 
@@ -189,9 +189,9 @@ public class TwitterUser implements Serializable {
       this.location = null;
     else {
       this.location = location.trim();
-      this.location = this.location.replaceAll("\\", "\\\\");
-      this.location = this.location.replaceAll("\"", "\\\"");
-      this.location = this.location.replaceAll("/", "\\/");
+      this.location = this.location.replace("\\", "\\\\");
+      this.location = this.location.replace("\"", "\\\"");
+      this.location = this.location.replace("/", "\\/");
     }
   }
 }
