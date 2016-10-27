@@ -87,7 +87,14 @@ public class TwitterUser implements Serializable {
    * @param userName the userName to set
    */
   public void setUserName(String userName) {
-    this.userName = userName;
+    if (userName == null)
+      this.userName = null;
+    else {
+      this.userName = userName.trim();
+      this.userName = this.userName.replaceAll("\\", "\\\\");
+      this.userName = this.userName.replaceAll("\"", "\\\"");
+      this.userName = this.userName.replaceAll("/", "\\/");
+    }
   }
 
   /**
@@ -101,7 +108,14 @@ public class TwitterUser implements Serializable {
    * @param screenName the screenName to set
    */
   public void setScreenName(String screenName) {
-    this.screenName = screenName;
+    if (screenName == null)
+      this.screenName = null;
+    else {
+      this.screenName = screenName.trim();
+      this.screenName = this.screenName.replaceAll("\\", "\\\\");
+      this.screenName = this.screenName.replaceAll("\"", "\\\"");
+      this.screenName = this.screenName.replaceAll("/", "\\/");
+    }
   }
 
   /**
@@ -171,6 +185,13 @@ public class TwitterUser implements Serializable {
    * @param location the location to set
    */
   public void setLocation(String location) {
-    this.location = location;
+    if (location == null)
+      this.location = null;
+    else {
+      this.location = location.trim();
+      this.location = this.location.replaceAll("\\", "\\\\");
+      this.location = this.location.replaceAll("\"", "\\\"");
+      this.location = this.location.replaceAll("/", "\\/");
+    }
   }
 }

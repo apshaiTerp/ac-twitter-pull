@@ -333,13 +333,15 @@ public class TwitterCall {
     CloseableHttpClient   client   = null;
     CloseableHttpResponse response = null;
     
-    int loopLimit = Math.min(tweetCount, TWEET_LIMIT);
-    int tweets    = 0;
-    long cursor   = 0;
+    int loopLimit   = Math.min(tweetCount, TWEET_LIMIT);
+    int tweets      = 0;
+    long cursor     = 0;
+    int bailCounter = 0;
 
     List<TwitterStatus> statuses = new LinkedList<TwitterStatus>();
     String twitterURL            = null;
     String responseString        = null;
+    
     
     try {
       OAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
@@ -368,8 +370,15 @@ public class TwitterCall {
         try {
           JSONObject errors = new JSONObject(responseString);
           if (errors.has("errors")) {
+            bailCounter++;
+            if (bailCounter > 3) {
+              System.out.println ("We've attempted and failed at this user enough!");
+              return statuses;
+            }
+            
             System.out.println (twitterURL);
             System.out.println (responseString);
+            System.out.println ("bailCounter: " + bailCounter);
             System.out.println ("I hit my tweet request limit and need to sleep for about 15 minutes here...");
             System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
             try { Thread.sleep(910000); } catch (Throwable t) {}
@@ -384,6 +393,7 @@ public class TwitterCall {
           }
         } catch (Throwable t) { /** Ignore Me */ }
         
+        bailCounter = 0;
         JSONArray allTweets = new JSONArray(responseString);
         
         //System.out.println ("Processing " + allTweets.length() + " tweets...");
