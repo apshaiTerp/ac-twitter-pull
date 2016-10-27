@@ -389,7 +389,7 @@ public class BasicTwitterPull {
       
       List<Integer> sortValues = new ArrayList<Integer>(inputUsers.size());
       sortValues.addAll(inputUsers.keySet());
-      Collections.sort(sortValues);
+      Collections.sort(sortValues, Collections.reverseOrder());
       
       //now we want to record all users, and process tweets
       for (Integer value : sortValues) {

@@ -59,6 +59,7 @@ public class TwitterCall {
     CloseableHttpResponse response = null;
     
     TwitterUser twitterUser        = null;
+    String twitterURL              = null;
     String responseString          = null;
 
     try {
@@ -67,7 +68,7 @@ public class TwitterCall {
       
       client = HttpClients.createDefault();
 
-      String twitterURL = "https://api.twitter.com/1.1/users/lookup.json?screen_name=" + userName;
+      twitterURL = "https://api.twitter.com/1.1/users/lookup.json?screen_name=" + userName;
       HttpGet request = new HttpGet(twitterURL);
       consumer.sign(request);
       response = client.execute(request);
@@ -78,6 +79,7 @@ public class TwitterCall {
       try {
         JSONObject errors = new JSONObject(responseString);
         if (errors.has("errors")) {
+          System.out.println (twitterURL);
           System.out.println (responseString);
           
           JSONObject errorDetails = errors.getJSONArray("errors").getJSONObject(0);
@@ -96,6 +98,7 @@ public class TwitterCall {
           }
         }
         if (errors.has("error")) {
+          System.out.println (twitterURL);
           System.out.println (responseString);
           System.out.println ("I do not have persmission to get this data...");
           return null;
@@ -113,13 +116,13 @@ public class TwitterCall {
         
         twitterUser.setUserType(userType);
         twitterUser.setTwitterID(jsonUser.getLong("id"));
-        twitterUser.setUserName(jsonUser.getString("name").trim());
-        twitterUser.setScreenName(jsonUser.getString("screen_name").trim());
+        twitterUser.setUserName(jsonUser.getString("name"));
+        twitterUser.setScreenName(jsonUser.getString("screen_name"));
         twitterUser.setFollowersCount(jsonUser.getInt("followers_count"));
         twitterUser.setFriendsCount(jsonUser.getInt("friends_count"));
         twitterUser.setStatusesCount(jsonUser.getInt("statuses_count"));
         if (jsonUser.has("location"))
-          twitterUser.setLocation(jsonUser.getString("location").trim());
+          twitterUser.setLocation(jsonUser.getString("location"));
         
         //System.out.println (twitterUser.jsonify());
       }
@@ -129,8 +132,9 @@ public class TwitterCall {
       
       return twitterUser;
     } catch (Throwable t) {
-      System.err.println("Something bad happened parsing user info for " + userName + "!");
+      System.out.println (twitterURL);
       System.err.println (responseString);
+      System.err.println("Something bad happened parsing user info for " + userName + "!");
       t.printStackTrace();
       return null;
     }
@@ -149,15 +153,16 @@ public class TwitterCall {
     CloseableHttpResponse response = null;
     
     TwitterUser twitterUser        = null;
+    String twitterURL              = null;
     String responseString          = null;
-
+    
     try {
       OAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
       consumer.setTokenWithSecret(ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
       
       client = HttpClients.createDefault();
 
-      String twitterURL = "https://api.twitter.com/1.1/users/lookup.json?user_id=" + userID;
+      twitterURL = "https://api.twitter.com/1.1/users/lookup.json?user_id=" + userID;
       HttpGet request = new HttpGet(twitterURL);
       consumer.sign(request);
       response = client.execute(request);
@@ -173,6 +178,7 @@ public class TwitterCall {
       try {
         JSONObject errors = new JSONObject(responseString);
         if (errors.has("errors")) {
+          System.out.println (twitterURL);
           System.out.println (responseString);
           JSONObject errorDetails = errors.getJSONArray("errors").getJSONObject(0);
           int errorCode = errorDetails.getInt("code");
@@ -190,6 +196,7 @@ public class TwitterCall {
           }
         }
         if (errors.has("error")) {
+          System.out.println (twitterURL);
           System.out.println (responseString);
           System.out.println ("I do not have persmission to get this data...");
           return null;
@@ -207,13 +214,13 @@ public class TwitterCall {
         
         twitterUser.setUserType(userType);
         twitterUser.setTwitterID(jsonUser.getLong("id"));
-        twitterUser.setUserName(jsonUser.getString("name").trim());
-        twitterUser.setScreenName(jsonUser.getString("screen_name").trim());
+        twitterUser.setUserName(jsonUser.getString("name"));
+        twitterUser.setScreenName(jsonUser.getString("screen_name"));
         twitterUser.setFollowersCount(jsonUser.getInt("followers_count"));
         twitterUser.setFriendsCount(jsonUser.getInt("friends_count"));
         twitterUser.setStatusesCount(jsonUser.getInt("statuses_count"));
         if (jsonUser.has("location"))
-          twitterUser.setLocation(jsonUser.getString("location").trim());
+          twitterUser.setLocation(jsonUser.getString("location"));
         
         //System.out.println (twitterUser.jsonify());
       }
@@ -223,8 +230,9 @@ public class TwitterCall {
       
       return twitterUser;
     } catch (Throwable t) {
-      System.err.println("Something bad happened parsing user info for " + userID + "!");
+      System.err.println(twitterURL);
       System.err.println(responseString);
+      System.err.println("Something bad happened parsing user info for " + userID + "!");
       t.printStackTrace();
       return null;
     }
@@ -330,6 +338,7 @@ public class TwitterCall {
     long cursor   = 0;
 
     List<TwitterStatus> statuses = new LinkedList<TwitterStatus>();
+    String twitterURL            = null;
     String responseString        = null;
     
     try {
@@ -342,7 +351,7 @@ public class TwitterCall {
         //DEBUG
         //System.out.println ("Tweets: " + tweets);
         
-        String twitterURL = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" + userName + 
+        twitterURL = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" + userName + 
             "&count=" + MAX_TWEET_COUNT + "&exclude_replies=true";
         if (tweets > 0) twitterURL += "&max_id=" + cursor;
         
@@ -359,6 +368,7 @@ public class TwitterCall {
         try {
           JSONObject errors = new JSONObject(responseString);
           if (errors.has("errors")) {
+            System.out.println (twitterURL);
             System.out.println (responseString);
             System.out.println ("I hit my tweet request limit and need to sleep for about 15 minutes here...");
             System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
@@ -367,6 +377,7 @@ public class TwitterCall {
             continue;
           }
           if (errors.has("error")) {
+            System.out.println (twitterURL);
             System.out.println (responseString);
             System.out.println ("I do not have persmission to get this data...");
             return statuses;
@@ -484,8 +495,9 @@ public class TwitterCall {
       
       return statuses;
     } catch (Throwable t) {
-      System.err.println("Something bad happened parsing tweets for " + userName + "!");
+      System.out.println(twitterURL);
       System.err.println(responseString);
+      System.err.println("Something bad happened parsing tweets for " + userName + "!");
       t.printStackTrace();
       return null;
     }
