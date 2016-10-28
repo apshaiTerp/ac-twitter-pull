@@ -342,7 +342,6 @@ public class TwitterCall {
     String twitterURL            = null;
     String responseString        = null;
     
-    
     try {
       OAuthConsumer consumer = new CommonsHttpOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
       consumer.setTokenWithSecret(ACCESS_TOKEN, ACCESS_TOKEN_SECRET);
@@ -373,6 +372,8 @@ public class TwitterCall {
             bailCounter++;
             if (bailCounter > 3) {
               System.out.println ("We've attempted and failed at this user enough!");
+              //Register Master Failure
+              BasicTwitterPull.totalBombCount++;
               return statuses;
             }
             
@@ -394,7 +395,26 @@ public class TwitterCall {
         } catch (Throwable t) { /** Ignore Me */ }
         
         bailCounter = 0;
-        JSONArray allTweets = new JSONArray(responseString);
+        JSONArray allTweets = null;
+        try {
+          allTweets = new JSONArray(responseString);
+        } catch (Throwable t) {
+          //This only happens if the response was not a String
+          bailCounter++;
+          
+          System.out.println (twitterURL);
+          System.out.println (responseString);
+          System.out.println ("bailCounter: " + bailCounter);
+          
+          if (bailCounter > 3) {
+            System.out.println ("We've attempted and failed at this user enough!");
+            //Register Master Failure
+            return statuses;
+          }
+          
+          System.out.println ("There was something wrong with the response.  Re-attempting call");
+          continue;
+        }
         
         //System.out.println ("Processing " + allTweets.length() + " tweets...");
         

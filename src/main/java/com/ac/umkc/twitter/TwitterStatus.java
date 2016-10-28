@@ -56,7 +56,15 @@ public class TwitterStatus {
    * @param hashTag the hashtag to add
    */
   public void addHashTag(String hashTag) {
-    hashTags.add(hashTag);
+    if (hashTag == null) return;
+    if (hashTag.trim().length() == 0) return;
+    
+    String modHashTag = hashTag.trim();
+    modHashTag = modHashTag.replace("\\", "\\\\");
+    modHashTag = modHashTag.replace("\"", "\\\"");
+    modHashTag = modHashTag.replace("/", "\\/");
+
+    hashTags.add(modHashTag);
   }
   
   /**
@@ -119,7 +127,14 @@ public class TwitterStatus {
    * @param userName the userName to set
    */
   public void setUserName(String userName) {
-    this.userName = userName;
+    if (userName == null)
+      this.userName = null;
+    else {
+      this.userName = userName.trim();
+      this.userName = this.userName.replace("\\", "\\\\");
+      this.userName = this.userName.replace("\"", "\\\"");
+      this.userName = this.userName.replace("/", "\\/");
+    }
   }
 
   /**
@@ -161,7 +176,14 @@ public class TwitterStatus {
    * @param filteredText the filteredText to set
    */
   public void setFilteredText(String filteredText) {
-    this.filteredText = filteredText;
+    if (filteredText == null)
+      this.filteredText = null;
+    else {
+      this.filteredText = filteredText.trim();
+      this.filteredText = this.filteredText.replace("\\", "\\\\");
+      this.filteredText = this.filteredText.replace("\"", "\\\"");
+      this.filteredText = this.filteredText.replace("/", "\\/");
+    }
   }
 
   /**

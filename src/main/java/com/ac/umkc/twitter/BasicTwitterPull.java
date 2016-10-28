@@ -50,6 +50,11 @@ public class BasicTwitterPull {
   /** Simple Date Formatter for output on wait times */
   private static final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
 
+  /** Helper field to ensure we fail out gracefully at some point */
+  public static int totalBombCount = 0;
+  /** Failure Threshold */
+  public static final int BOMB_THRESHOLD = 5;
+  
   /**
    * Basic Constructor.
    * @param inputPath The file path provided at the command prompt.
@@ -411,11 +416,19 @@ public class BasicTwitterPull {
           
           if (value >= 20) {
             List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
-            totalTweets += statuses.size();
-            System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
 
-            for (TwitterStatus status : statuses)
-              statusesWriter.println (status.jsonify());
+            if (statuses != null) {
+              totalTweets += statuses.size();
+              System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
+  
+              for (TwitterStatus status : statuses)
+                statusesWriter.println (status.jsonify());
+            }
+
+            //Check for failout clause;
+            if (totalBombCount > BOMB_THRESHOLD) {
+              break;
+            }
           }
         }
         
@@ -423,6 +436,12 @@ public class BasicTwitterPull {
         userRawWriter.flush();
         statusesWriter.flush();
         statusesRawWriter.flush();
+        
+        //Check for failout clause;
+        if (totalBombCount > BOMB_THRESHOLD) {
+          System.out.println ("We are in trouble.  We've failed too much.  Bomb out gracefully");
+          break;
+        }
       }
       
       userWriter.close();
