@@ -222,7 +222,7 @@ public class BasicTwitterPull {
         //*totalTweets += statuses.size();
         //*System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
-        userWriter.println (user.jsonify());
+        if (user != null) userWriter.println (user.jsonify());
         //*for (TwitterStatus status : statuses)
         //*  statusesWriter.println (status.jsonify());
         
@@ -257,7 +257,7 @@ public class BasicTwitterPull {
         //totalTweets += statuses.size();
         //System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
-        userWriter.println (user.jsonify());
+        if (user != null) userWriter.println (user.jsonify());
         //for (TwitterStatus status : statuses)
         //  statusesWriter.println (status.jsonify());
         
@@ -292,7 +292,7 @@ public class BasicTwitterPull {
         //totalTweets += statuses.size();
         //System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
-        userWriter.println (user.jsonify());
+        if (user != null) userWriter.println (user.jsonify());
         //for (TwitterStatus status : statuses)
         //  statusesWriter.println (status.jsonify());
         
@@ -327,7 +327,7 @@ public class BasicTwitterPull {
         //totalTweets += statuses.size();
         //System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
-        userWriter.println (user.jsonify());
+        if (user != null) userWriter.println (user.jsonify());
         //for (TwitterStatus status : statuses)
         //  statusesWriter.println (status.jsonify());
         
