@@ -399,7 +399,7 @@ public class BasicTwitterPull {
       //now we want to record all users, and process tweets
       for (Integer value : sortValues) {
         System.out.println ("[" + formatter.format(new Date()) + "] Processing users who follow " + value + " other key users.");
-        if (value < 10) {
+        if (value < 5) {
           System.out.println ("We are ignoring users who follow less than 10 key entities");
           continue;
         }
