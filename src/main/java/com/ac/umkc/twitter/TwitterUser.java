@@ -28,6 +28,13 @@ public class TwitterUser implements Serializable {
   /** The location this user is found at, if available */
   private String location;
   
+  /**  */
+  private String googleLocation;
+  /**  */
+  private double geoLat;
+  /**  */
+  private double geoLon;
+  
   /**
    * Basic Constructor
    */
@@ -40,6 +47,9 @@ public class TwitterUser implements Serializable {
     statusesCount  = -1;
     userType       = null;
     location       = null;
+    googleLocation = null;
+    geoLat         = 0.0;
+    geoLon         = 0.0;
   }
   
   /**
@@ -50,7 +60,8 @@ public class TwitterUser implements Serializable {
     return "{\"twitterID\":" + twitterID + ",\"userName\":\"" + userName + "\",\"screenName\":\"" + 
         screenName + "\",\"followersCount\":" + followersCount + ",\"friendsCount\":" + friendsCount + 
         ",\"statusesCount\":" + statusesCount + ",\"userType\":\"" + userType + "\",\"location\":\"" + 
-        location + "\"}";
+        location + "\",\"googleLocation\":\"" + googleLocation + "\",\"geoLat\":" + geoLat + 
+        ",\"geoLon\":" + geoLon + "}";
   }
   
   /*
@@ -193,5 +204,47 @@ public class TwitterUser implements Serializable {
       this.location = this.location.replace("\"", "\\\"");
       this.location = this.location.replace("/", "\\/");
     }
+  }
+
+  /**
+   * @return the googleLocation
+   */
+  public String getGoogleLocation() {
+    return googleLocation;
+  }
+
+  /**
+   * @param googleLocation the googleLocation to set
+   */
+  public void setGoogleLocation(String googleLocation) {
+    this.googleLocation = googleLocation;
+  }
+
+  /**
+   * @return the geoLat
+   */
+  public double getGeoLat() {
+    return geoLat;
+  }
+
+  /**
+   * @param geoLat the geoLat to set
+   */
+  public void setGeoLat(double geoLat) {
+    this.geoLat = geoLat;
+  }
+
+  /**
+   * @return the geoLon
+   */
+  public double getGeoLon() {
+    return geoLon;
+  }
+
+  /**
+   * @param geoLon the geoLon to set
+   */
+  public void setGeoLon(double geoLon) {
+    this.geoLon = geoLon;
   }
 }

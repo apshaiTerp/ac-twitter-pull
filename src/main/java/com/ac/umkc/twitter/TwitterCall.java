@@ -130,6 +130,16 @@ public class TwitterCall {
       response.close();
       client.close();
       
+      if ((twitterUser.getLocation() != null) && (twitterUser.getLocation().length() > 0)) {
+        GoogleData data = GoogleCall.getGoogleLocation(twitterUser.getLocation());
+        if (data != null) {
+          twitterUser.setGoogleLocation(data.getLocation());
+          twitterUser.setGeoLat(data.getGeoLat());
+          twitterUser.setGeoLon(data.getGeoLon());
+        }
+        
+      }
+      
       return twitterUser;
     } catch (Throwable t) {
       System.out.println (twitterURL);
