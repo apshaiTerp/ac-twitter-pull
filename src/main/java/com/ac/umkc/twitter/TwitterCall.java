@@ -90,11 +90,15 @@ public class TwitterCall {
             return null;
           }
           if (errorCode == 88) {
-            System.out.println ("I hit my request limit and need to sleep for about 15 minutes here...");
-            System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
-            try { Thread.sleep(910000); } catch (Throwable t) {}
+            System.out.println ("I hit my request limit and need to sleep for about 5 minutes here...");
+            System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 300000)));
+            try { Thread.sleep(300000); } catch (Throwable t) {}
             System.out.println ("Resuming operation");
             return getTwitterUser(userName, userType, writer);
+          } else {
+            System.out.println ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println ("I hit an unknown error.  What was it?");
+            System.out.println ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           }
         }
         if (errors.has("error")) {
@@ -204,6 +208,10 @@ public class TwitterCall {
             try { Thread.sleep(910000); } catch (Throwable t) {}
             System.out.println ("Resuming operation");
             return getTwitterUser(userID, userType, writer);
+          } else {
+            System.out.println ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println ("I hit an unknown error.  What was it?");
+            System.out.println ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
           }
         }
         if (errors.has("error")) {
@@ -302,10 +310,10 @@ public class TwitterCall {
         
         if (allFollowers.has("errors")) {
           System.out.println (responseString);
-          System.out.println ("I hit my follower request limit and need to sleep for about 15 minutes here...");
+          System.out.println ("I hit my follower request limit and need to sleep for about 5 minutes here...");
           loop--;
-          System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
-          try { Thread.sleep(910000); } catch (Throwable t) {}
+          System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 300000)));
+          try { Thread.sleep(300000); } catch (Throwable t) {}
           System.out.println ("Resuming operation");
         } else if (allFollowers.has("error")) {
           System.out.println (responseString);
@@ -402,9 +410,9 @@ public class TwitterCall {
             System.out.println (twitterURL);
             System.out.println (responseString);
             System.out.println ("bailCounter: " + bailCounter);
-            System.out.println ("I hit my tweet request limit and need to sleep for about 15 minutes here...");
-            System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 930000)));
-            try { Thread.sleep(910000); } catch (Throwable t) {}
+            System.out.println ("I hit my tweet request limit and need to sleep for about 5 minutes here...");
+            System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 300000)));
+            try { Thread.sleep(300000); } catch (Throwable t) {}
             System.out.println ("Resuming operation");
             continue;
           }
