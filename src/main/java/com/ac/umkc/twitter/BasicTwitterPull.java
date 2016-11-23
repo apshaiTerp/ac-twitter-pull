@@ -79,7 +79,11 @@ public class BasicTwitterPull {
     pull.execute();
   }
     
-  public void execute() {   
+  public void execute() {
+    Date finishDate = new Date();
+    //Set our finish time at 18 hours, or 64800000 milliseconds from now
+    finishDate.setTime(finishDate.getTime() + 64800000);
+
     File rootInputFolder  = new File(inputFolder);
     if (!rootInputFolder.exists()) {
       System.err.println ("The provided input folder path does not exist");
@@ -215,16 +219,16 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Designer " + designer);
         
         TwitterUser user             = TwitterCall.getTwitterUser(designer, UserType.DESIGNER, userRawWriter);
-        //*List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
+        List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
         //knownUserIDs.add(user.getTwitterID());
-        //*totalTweets += statuses.size();
-        //*System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
+        totalTweets += statuses.size();
+        System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
         if (user != null) userWriter.println (user.jsonify());
-        //*for (TwitterStatus status : statuses)
-        //*  statusesWriter.println (status.jsonify());
+        for (TwitterStatus status : statuses)
+          statusesWriter.println (status.jsonify());
         
         /**********************************************
         for (Long follower : followers) {
@@ -250,16 +254,16 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Publisher " + publisher);
         
         TwitterUser user             = TwitterCall.getTwitterUser(publisher, UserType.PUBLISHER, userRawWriter);
-        //List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
+        List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
         //knownUserIDs.add(user.getTwitterID());
-        //totalTweets += statuses.size();
-        //System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
+        totalTweets += statuses.size();
+        System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
         if (user != null) userWriter.println (user.jsonify());
-        //for (TwitterStatus status : statuses)
-        //  statusesWriter.println (status.jsonify());
+        for (TwitterStatus status : statuses)
+          statusesWriter.println (status.jsonify());
         
         /**********************************************
         for (Long follower : followers) {
@@ -285,16 +289,16 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Reviewer " + reviewer);
         
         TwitterUser user             = TwitterCall.getTwitterUser(reviewer, UserType.REVIEWER, userRawWriter);
-        //List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
+        List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
         //knownUserIDs.add(user.getTwitterID());
-        //totalTweets += statuses.size();
-        //System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
+        totalTweets += statuses.size();
+        System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
         if (user != null) userWriter.println (user.jsonify());
-        //for (TwitterStatus status : statuses)
-        //  statusesWriter.println (status.jsonify());
+        for (TwitterStatus status : statuses)
+          statusesWriter.println (status.jsonify());
         
         /**********************************************
         for (Long follower : followers) {
@@ -320,16 +324,16 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Key Event " + keyEvent);
         
         TwitterUser user             = TwitterCall.getTwitterUser(keyEvent, UserType.CONVENTION, userRawWriter);
-        //List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
+        List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
         //knownUserIDs.add(user.getTwitterID());
-        //totalTweets += statuses.size();
-        //System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
+        totalTweets += statuses.size();
+        System.out.println ("Total Tweet Count: " + statuses.size() + "  (" + totalTweets + ")");
         
         if (user != null) userWriter.println (user.jsonify());
-        //for (TwitterStatus status : statuses)
-        //  statusesWriter.println (status.jsonify());
+        for (TwitterStatus status : statuses)
+          statusesWriter.println (status.jsonify());
         
         /**********************************************
         for (Long follower : followers) {
@@ -414,8 +418,7 @@ public class BasicTwitterPull {
           if (user != null) userWriter.println (user.jsonify());
           else continue;
           
-          /****************************
-          if (value >= 20) {
+          if (value >= 10) {
             List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
 
             if (statuses != null) {
@@ -431,7 +434,6 @@ public class BasicTwitterPull {
               break;
             }
           }
-          ***********************************/
         }
         
         userWriter.flush();
@@ -442,6 +444,14 @@ public class BasicTwitterPull {
         //Check for failout clause;
         if (totalBombCount > BOMB_THRESHOLD) {
           System.out.println ("We are in trouble.  We've failed too much.  Bomb out gracefully");
+          break;
+        }
+        
+        //Now we want to check out timeout threshold
+        if (finishDate.before(new Date())) {
+          System.out.println ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+          System.out.println ("Breaking for Timeout at the end of User Count: " + value);
+          System.out.println ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
           break;
         }
       }
