@@ -219,6 +219,7 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Designer " + designer);
         
         TwitterUser user             = TwitterCall.getTwitterUser(designer, UserType.DESIGNER, userRawWriter);
+        if (user == null) continue;
         List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
@@ -254,6 +255,7 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Publisher " + publisher);
         
         TwitterUser user             = TwitterCall.getTwitterUser(publisher, UserType.PUBLISHER, userRawWriter);
+        if (user == null) continue;
         List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
@@ -289,6 +291,7 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Reviewer " + reviewer);
         
         TwitterUser user             = TwitterCall.getTwitterUser(reviewer, UserType.REVIEWER, userRawWriter);
+        if (user == null) continue;
         List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
@@ -324,6 +327,7 @@ public class BasicTwitterPull {
         System.out.println ("[" + formatter.format(new Date()) + "] About to process data for Key Event " + keyEvent);
         
         TwitterUser user             = TwitterCall.getTwitterUser(keyEvent, UserType.CONVENTION, userRawWriter);
+        if (user == null) continue;
         List<TwitterStatus> statuses = TwitterCall.getUserTweets(user.getScreenName(), user.getStatusesCount(), statusesRawWriter);
         //List<Long> followers         = TwitterCall.getUserList(user.getTwitterID(), user.getFollowersCount());
         
