@@ -424,7 +424,6 @@ public class TwitterCall {
           }
         } catch (Throwable t) { /** Ignore Me */ }
         
-        bailCounter = 0;
         JSONArray allTweets = null;
         try {
           allTweets = new JSONArray(responseString);
@@ -454,6 +453,7 @@ public class TwitterCall {
         
         //Lets start parsing through tweets
         for (int i = 0; i < allTweets.length(); i++) {
+          bailCounter = 0;
           tweets++;
           JSONObject tweet     = allTweets.getJSONObject(i);
           TwitterStatus status = new TwitterStatus();
