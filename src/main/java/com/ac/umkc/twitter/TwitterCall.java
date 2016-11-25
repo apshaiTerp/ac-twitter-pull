@@ -400,6 +400,8 @@ public class TwitterCall {
           JSONObject errors = new JSONObject(responseString);
           if (errors.has("errors")) {
             bailCounter++;
+            System.out.println ("bailCounter: " + bailCounter);
+
             if (bailCounter > 3) {
               System.out.println ("We've attempted and failed at this user enough!");
               //Register Master Failure
@@ -409,7 +411,6 @@ public class TwitterCall {
             
             System.out.println (twitterURL);
             System.out.println (responseString);
-            System.out.println ("bailCounter: " + bailCounter);
             System.out.println ("I hit my tweet request limit and need to sleep for about 5 minutes here...");
             System.out.println ("  I will resume by " + formatter.format(new Date(System.currentTimeMillis() + 300000)));
             try { Thread.sleep(300000); } catch (Throwable t) {}
@@ -430,13 +431,14 @@ public class TwitterCall {
         } catch (Throwable t) {
           //This only happens if the response was not a String
           bailCounter++;
+          System.out.println ("bailCounter: " + bailCounter);
           
           System.out.println (twitterURL);
           System.out.println (responseString);
-          System.out.println ("bailCounter: " + bailCounter);
           
           if (bailCounter > 3) {
             System.out.println ("We've attempted and failed at this user enough!");
+            BasicTwitterPull.totalBombCount++;
             //Register Master Failure
             return statuses;
           }
