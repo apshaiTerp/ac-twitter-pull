@@ -27,13 +27,17 @@ import org.json.JSONObject;
 public class TwitterCall {
 
   /** OAuth Information for apshaiTerp Developer account on Twitter */
-  private static final String ACCESS_TOKEN        = "239401078-eDjOFRN4gICrqcNFyZIojk260ektMEXo3whHBs3v";
+  //private static final String ACCESS_TOKEN        = "239401078-eDjOFRN4gICrqcNFyZIojk260ektMEXo3whHBs3v";
+  private static final String ACCESS_TOKEN        = "239401078-xU3q4lb1gvcpFa4Ttw53FHjyyIiI5fahx29EYVLR";
   /** OAuth Information for apshaiTerp Developer account on Twitter */
-  private static final String ACCESS_TOKEN_SECRET = "3T2JlTzARHylyslH6k4O8G35oRXll0YMXnkSgqqfkjJ9n";
+  //private static final String ACCESS_TOKEN_SECRET = "3T2JlTzARHylyslH6k4O8G35oRXll0YMXnkSgqqfkjJ9n";
+  private static final String ACCESS_TOKEN_SECRET = "AqgYOgaMavDjmNXPmIIsmWMjfYfJlgQIrv33Te3N0cyem";
   /** OAuth Information for apshaiTerp Developer account on Twitter */
-  private static final String CONSUMER_KEY        = "rzdr518OzoEWmGbD0yie3yDfb";
+  //private static final String CONSUMER_KEY        = "rzdr518OzoEWmGbD0yie3yDfb";
+  private static final String CONSUMER_KEY        = "aqGA38mJaxgE1vJeQIVw4l7fN";
   /** OAuth Information for apshaiTerp Developer account on Twitter */
-  private static final String CONSUMER_SECRET     = "7AFOzobLLXLviMYaMhrXH2oLGlntW0G6tCHJi4LiddWh6AuDBn";
+  //private static final String CONSUMER_SECRET     = "7AFOzobLLXLviMYaMhrXH2oLGlntW0G6tCHJi4LiddWh6AuDBn";
+  private static final String CONSUMER_SECRET     = "WVa8SDMWOWpBvzFz7B2qI0gMEI9J7eCnQQkDwazzdJ4nYIuJRR";
   
   /** Count of how many tweets I want to pull */
   private static final int MAX_TWEET_COUNT = 200;
